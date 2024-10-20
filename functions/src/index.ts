@@ -1,7 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as express from "express";
-import { JsonUtils } from "./utils/json";
 import { isWasTalkDefine } from "./formats/games/was/talk";
 import { initLocalStorage } from "./local";
 
@@ -16,17 +15,7 @@ initLocalStorage(bucket);
 app.post("/edits/games/was/talk", async (req, res) => {
   try {
     const json = req.body;
-    if (!json) {
-      res.status(400).send("Bad Request");
-      return;
-    }
-    if (!JsonUtils.isKeyValue(json)) {
-      res
-        .status(400)
-        .send("Bad Request. Request body is not key-value format.");
-      return;
-    }
-    if (!Object.keys(json).every((key) => isWasTalkDefine(json[key]))) {
+    if (!isWasTalkDefine(json)) {
       res.status(400).send("Bad Request. The talk is not talk format.");
       return;
     }
@@ -35,6 +24,7 @@ app.post("/edits/games/was/talk", async (req, res) => {
     const fileRef = bucket.file(`${filePath}/${fileName}`);
     const [exists] = await fileRef.exists();
 
+    let putData = json;
     // ファイルが既に存在する場合はバックアップを作成する
     if (exists) {
       const backupFilePath = `${filePath}/backups/talks`;
@@ -42,9 +32,15 @@ app.post("/edits/games/was/talk", async (req, res) => {
       const backupFileRef = bucket.file(`${backupFilePath}/${backFileName}`);
 
       await fileRef.copy(backupFileRef);
+
+      const [fileContents] = await fileRef.download();
+      const storageData = JSON.parse(fileContents.toString());
+      putData = Object.assign(storageData, { [putData.id]: putData });
     }
 
-    await fileRef.save(JSON.stringify(json));
+    console.log("putData", putData)
+    // 既存のファイルと結合して保存
+    await fileRef.save(JSON.stringify(putData));
     res.status(200).send("Success");
   } catch (error) {
     console.error(error);
