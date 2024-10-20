@@ -3,10 +3,15 @@ import * as admin from "firebase-admin";
 import * as express from "express";
 import { JsonUtils } from "./utils/json";
 import { isWasTalkDefine } from "./formats/games/was/talk";
+import { initLocalStorage } from "./local";
 
 admin.initializeApp();
+
 const app = express();
 const bucket = admin.storage().bucket();
+
+// TODO: ローカル起動の場合のみ実行するように修正する
+initLocalStorage(bucket);
 
 app.post("/edits/games/was/talk", async (req, res) => {
   try {

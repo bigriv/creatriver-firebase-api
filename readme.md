@@ -6,7 +6,8 @@
 
 ## ローカル起動
 
-`$ npm run serve`
+- `$ npm run serve`
+- 起動時に ./functions/emurators/storage 配下のファイルがエミュレータのバケットにコピーされる
 
 ## 技術スタック
 
