@@ -8,6 +8,10 @@ export type JsonObject = {
 
 export type Json = JsonObject;
 
+export type KeyValue<T> = {
+  [key: string]: T;
+};
+
 export class JsonUtils {
   private constructor() {}
 
@@ -16,7 +20,7 @@ export class JsonUtils {
    * @param value 任意のインスタンス
    * @returns 文字列をキーとしたオブジェクトならtrue、それ以外はfalse
    */
-  static isKeyValue(value: any): value is { [key: string]: any } {
+  static isKeyValue(value: any): value is KeyValue<any> {
     if (typeof value !== "object" || value === null) {
       return false;
     }
@@ -42,5 +46,14 @@ export class JsonUtils {
     return Object.keys(json).map((key) => {
       return { key: key, ...json[key] };
     });
+  }
+
+  /**
+   * オブジェクトのコピーを生成する
+   * @param json コピー元のオブジェクト
+   * @returns コピー後のオブジェクト
+   */
+  static copy<T>(json: T): T {
+    return JSON.parse(JSON.stringify(json));
   }
 }
