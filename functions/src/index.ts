@@ -75,4 +75,29 @@ app.post("/edits/games/was/talk", async (req, res) => {
   }
 });
 
+app.delete("/edits/games/was/talk/:id", async (req, res) => {
+  const filePath = "gameofus/games/was";
+  const fileName = "talk.json";
+  const fileRef = bucket.file(`${filePath}/${fileName}`);
+  const [exists] = await fileRef.exists();
+
+  // ファイルが存在しない場合はエラー
+  if (!exists) {
+    throw new Error("File is not exist.");
+  }
+
+  const backupFilePath = `${filePath}/backups/talks`;
+  const backFileName = `talk-${Date.now()}.json`;
+  const backupFileRef = bucket.file(`${backupFilePath}/${backFileName}`);
+
+  await fileRef.copy(backupFileRef);
+
+  const [fileContents] = await fileRef.download();
+  const storageData = JSON.parse(fileContents.toString());
+  delete storageData[req.params.id];
+
+  // 既存のファイルを上書きして保存
+  await fileRef.save(JSON.stringify(storageData));
+  res.status(200).send("Success");
+});
 export const api = functions.https.onRequest(app);
