@@ -23,7 +23,7 @@ export class WasBattleRepository implements WasBattleRepositoryIf {
     const [exists] = await fileRef.exists();
 
     if (!exists) {
-      throw new Error("File is not exist.");
+      return {};
     }
     const [fileContents] = await fileRef.download();
     const json = JSON.parse(fileContents.toString());
@@ -48,7 +48,7 @@ export class WasBattleRepository implements WasBattleRepositoryIf {
     );
     const [exists] = await fileRef.exists();
 
-    let putData = JsonUtils.copy(battle);
+    let putData = { [`${battle.id}`]: JsonUtils.copy(battle) };
     // ファイルが既に存在する場合はバックアップを作成する
     if (exists) {
       const backupFilePath = `${WasBattleRepository.FILE_PATH}/backups/battles`;
@@ -61,7 +61,7 @@ export class WasBattleRepository implements WasBattleRepositoryIf {
 
       const [fileContents] = await fileRef.download();
       const storageData = JSON.parse(fileContents.toString());
-      putData = Object.assign(storageData, { [putData.id]: putData });
+      putData = Object.assign(storageData, putData);
     }
 
     // 既存のファイルと結合して保存
@@ -78,9 +78,9 @@ export class WasBattleRepository implements WasBattleRepositoryIf {
     );
     const [exists] = await fileRef.exists();
 
-    // ファイルが存在しない場合はエラー
+    // ファイルが存在しない場合は何もしない
     if (!exists) {
-      throw new Error("File is not exist.");
+      return;
     }
 
     const backupFilePath = `${WasBattleRepository.FILE_PATH}/backups/battles`;
