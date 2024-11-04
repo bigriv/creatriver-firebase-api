@@ -9,6 +9,8 @@ import { EditWasTalkController } from "@/controller/edits/games/was/talk";
 import { EditWasBattleController } from "@/controller/edits/games/was/battle";
 import { WasTalkRepository } from "@/repositories/games/was/talk";
 import { WasBattleRepository } from "@/repositories/games/was/battle";
+import { EditWasSkillController } from "@/controller/edits/games/was/skill";
+import { WasSkillRepository } from "@/repositories/games/was/skill";
 
 admin.initializeApp();
 
@@ -42,6 +44,19 @@ app.post("/edits/games/was/battle", (req, res) =>
 );
 app.delete("/edits/games/was/battle/:id", (req, res) =>
   editWasBattleController.delete(req, res)
+);
+
+const editWasSkillController = new EditWasSkillController(
+  new WasSkillRepository(bucket)
+);
+app.get("/edits/games/was/skill", (req, res) =>
+  editWasSkillController.get(req, res)
+);
+app.post("/edits/games/was/skill", (req, res) =>
+  editWasSkillController.post(req, res)
+);
+app.delete("/edits/games/was/skill/:id", (req, res) =>
+  editWasSkillController.delete(req, res)
 );
 
 export const api = functions.https.onRequest(app);
