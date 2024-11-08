@@ -1,13 +1,14 @@
 import { WAS_SKILL_TYPE, WAS_STATE_CONDITION } from "@/const/games/was/const";
+import { FirebaseStorageModel } from "@/formats/fsmodel";
 
-export type WasSkillDefine = {
+export interface WasSkillDefine extends FirebaseStorageModel {
   id: string;
   name: string;
   description: string;
   se?: string;
   animation?: string;
   effects: WasSkillEffectDefine[];
-};
+}
 
 export function isWasSkillDefine(value: any): value is WasSkillDefine {
   if (typeof value !== "object" || value === null) {

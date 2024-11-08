@@ -1,12 +1,6 @@
 import { Request, Response } from "express";
-import { KeyValue } from "@/utils/json";
-import { isWasSkillDefine, WasSkillDefine } from "@/formats/games/was/skill";
-
-export interface WasSkillRepositoryIf {
-  findAll(): Promise<KeyValue<WasSkillDefine>>;
-  save(skill: WasSkillDefine): Promise<void>;
-  deleteById(id: string): Promise<void>;
-}
+import { isWasSkillDefine } from "@/formats/games/was/skill";
+import { WasSkillRepositoryIf } from "@/repositories/edits/games/was";
 
 export class EditWasSkillController {
   private repository: WasSkillRepositoryIf;
@@ -57,7 +51,7 @@ export class EditWasSkillController {
    * @param res レスポンス
    */
   async delete(req: Request, res: Response) {
-    await this.repository.deleteById(req.params.id);
+    await this.repository.deleteByKey(req.params.id);
     res.status(200).send("Success");
   }
 }

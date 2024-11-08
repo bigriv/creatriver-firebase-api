@@ -1,12 +1,6 @@
 import { Request, Response } from "express";
-import { KeyValue } from "@/utils/json";
-import { isWasTalkDefine, WasTalkDefine } from "@/formats/games/was/talk";
-
-export interface WasTalkRepositoryIf {
-  findAll(): Promise<KeyValue<WasTalkDefine>>;
-  save(talk: WasTalkDefine): Promise<void>;
-  deleteById(id: string): Promise<void>;
-}
+import { isWasTalkDefine } from "@/formats/games/was/talk";
+import { WasTalkRepositoryIf } from "@/repositories/edits/games/was";
 
 export class EditWasTalkController {
   private repository: WasTalkRepositoryIf;
@@ -57,7 +51,7 @@ export class EditWasTalkController {
    * @param res レスポンス
    */
   async delete(req: Request, res: Response) {
-    await this.repository.deleteById(req.params.id);
+    await this.repository.deleteByKey(req.params.id);
     res.status(200).send("Success");
   }
 }

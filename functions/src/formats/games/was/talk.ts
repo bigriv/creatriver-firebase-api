@@ -1,3 +1,5 @@
+import { FirebaseStorageModel } from "@/formats/fsmodel";
+
 export type WasTalkMessageDefine = {
   leftImage?: string;
   centerImage?: string;
@@ -8,7 +10,7 @@ export type WasTalkMessageDefine = {
   speed?: number;
 };
 
-export type WasTalkDefine = {
+export interface WasTalkDefine extends FirebaseStorageModel {
   id: string;
   description?: string;
   messages: WasTalkMessageDefine[];
@@ -18,7 +20,7 @@ export type WasTalkDefine = {
     eventId: string;
   }[];
   afterEventId?: string;
-};
+}
 
 export function isWasTalkDefine(value: any): value is WasTalkDefine {
   if (typeof value !== "object" || value === null) {

@@ -1,4 +1,6 @@
-export type WasBattleDefine = {
+import { FirebaseStorageModel } from "@/formats/fsmodel";
+
+export interface WasBattleDefine extends FirebaseStorageModel {
   id: string;
   description?: string;
   opponent: {
@@ -14,7 +16,7 @@ export type WasBattleDefine = {
     skills: string[];
   };
   events: string[];
-};
+}
 
 export function isWasBattleDefine(value: any): value is WasBattleDefine {
   if (typeof value !== "object" || value === null) {

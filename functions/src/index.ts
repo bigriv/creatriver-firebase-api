@@ -5,12 +5,10 @@ import * as express from "express";
 require("module-alias/register");
 
 import { initLocalStorage } from "@/local";
+import { FirebaseStorageRepositoryBuilder } from "@/repositories/fsrepository";
 import { EditWasTalkController } from "@/controller/edits/games/was/talk";
 import { EditWasBattleController } from "@/controller/edits/games/was/battle";
-import { WasTalkRepository } from "@/repositories/games/was/talk";
-import { WasBattleRepository } from "@/repositories/games/was/battle";
 import { EditWasSkillController } from "@/controller/edits/games/was/skill";
-import { WasSkillRepository } from "@/repositories/games/was/skill";
 
 admin.initializeApp();
 
@@ -21,7 +19,12 @@ const bucket = admin.storage().bucket();
 initLocalStorage(bucket);
 
 const editWasTalkController = new EditWasTalkController(
-  new WasTalkRepository(bucket)
+  FirebaseStorageRepositoryBuilder.build(
+    bucket,
+    "talk",
+    "gameofus/games/was",
+    "gameofus/games/was/backups/talks"
+  )
 );
 app.get("/edits/games/was/talk", (req, res) =>
   editWasTalkController.get(req, res)
@@ -34,7 +37,12 @@ app.delete("/edits/games/was/talk/:id", (req, res) =>
 );
 
 const editWasBattleController = new EditWasBattleController(
-  new WasBattleRepository(bucket)
+  FirebaseStorageRepositoryBuilder.build(
+    bucket,
+    "battle",
+    "gameofus/games/was",
+    "gameofus/games/was/backups/battles"
+  )
 );
 app.get("/edits/games/was/battle", (req, res) =>
   editWasBattleController.get(req, res)
@@ -47,7 +55,12 @@ app.delete("/edits/games/was/battle/:id", (req, res) =>
 );
 
 const editWasSkillController = new EditWasSkillController(
-  new WasSkillRepository(bucket)
+  FirebaseStorageRepositoryBuilder.build(
+    bucket,
+    "skill",
+    "gameofus/games/was",
+    "gameofus/games/was/backups/skills"
+  )
 );
 app.get("/edits/games/was/skill", (req, res) =>
   editWasSkillController.get(req, res)
