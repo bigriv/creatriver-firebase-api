@@ -1,7 +1,11 @@
-import { FirebaseStorageModel } from "@/formats/fsmodel";
+import {
+  WAS_EVENT_CONDITION_TYPE,
+  WAS_EVENT_STATE_TYPE,
+  WAS_EVENT_TYPE,
+} from "@/const/games/was/const";
 
 export type WasTalkEventDefine = {
-  type: "TALK";
+  type: WAS_EVENT_TYPE.TALK;
   talk_id: string;
   after_event?:
     | {
@@ -19,55 +23,59 @@ export type WasTalkEventDefine = {
 };
 
 export type WasBattleEventDefine = {
-  type: "BATTLE";
+  type: WAS_EVENT_TYPE.BATTLE;
   battle_id: string;
 };
 
 export type WasPlayAudioEventDefine = {
-  type: "PLAY_AUDIO";
+  type: WAS_EVENT_TYPE.PLAY_AUDIO;
   audio_id: string;
   asBgm?: boolean;
   after_event?: string;
 };
 
 export type WasUpdateStateEventDefine = {
-  type: "UPDATE_STATE";
+  type: WAS_EVENT_TYPE.UPDATE_STATE;
   after_event?: string;
 } & (
   | {
-      target: "GAME_CLEAR";
+      target: WAS_EVENT_STATE_TYPE.GAME_CLEAR;
     }
   | {
-      target: "CHAPTER";
-      value: number;
+      target: WAS_EVENT_STATE_TYPE.CHAPTER;
+      chapter: number;
     }
   | {
-      target: "AREA_INVADED" | "AREA_MANAGED";
+      target:
+        | WAS_EVENT_STATE_TYPE.AREA_INVADED
+        | WAS_EVENT_STATE_TYPE.AREA_MANAGED;
       area_id: string;
       value: boolean;
     }
   | {
-      target: "CHARACTER_FRIENDLY";
+      target:
+        | WAS_EVENT_STATE_TYPE.CHARACTER_FRIENDLY
+        | WAS_EVENT_STATE_TYPE.CHARACTER_ALIVE;
       character_id: string;
       value: boolean;
     }
 );
 
 export type WasLearnSkillEventDefine = {
-  type: "LEARN_SKILL";
+  type: WAS_EVENT_TYPE.LEARN_SKILL;
   skill_id: string;
   after_event?: string;
 };
 
 export type WasUpdateAllyEventDefine = {
-  type: "UPDATE_ALLY";
+  type: WAS_EVENT_TYPE.UPDATE_ALLY;
   character_id: string;
   value: boolean;
   after_event?: string;
 };
 
 export type WasChangePageEventDefine = {
-  type: "CHANGE_PAGE";
+  type: WAS_EVENT_TYPE.CHANGE_PAGE;
   page_id: "MAP" | "AREA" | "ENDING";
 };
 
@@ -85,7 +93,7 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     return false;
   }
 
-  if (value.type === "TALK") {
+  if (value.type === WAS_EVENT_TYPE.TALK) {
     if (typeof value.talk_id !== "string") {
       return false;
     }
@@ -124,14 +132,14 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     return false;
   }
 
-  if (value.type === "BATTLE") {
+  if (value.type === WAS_EVENT_TYPE.BATTLE) {
     if (typeof value.battle_id !== "string") {
       return false;
     }
     return true;
   }
 
-  if (value.type === "PLAY_AUDIO") {
+  if (value.type === WAS_EVENT_TYPE.PLAY_AUDIO) {
     if (typeof value.audio_id !== "string") {
       return false;
     }
@@ -147,7 +155,7 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     return true;
   }
 
-  if (value.type === "LEARN_SKILL") {
+  if (value.type === WAS_EVENT_TYPE.LEARN_SKILL) {
     if (typeof value.skill_id !== "string") {
       return false;
     }
@@ -160,7 +168,7 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     return true;
   }
 
-  if (value.type === "UPDATE_ALLY") {
+  if (value.type === WAS_EVENT_TYPE.UPDATE_ALLY) {
     if (typeof value.character_id !== "string") {
       return false;
     }
@@ -176,18 +184,21 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     return true;
   }
 
-  if (value.type === "UPDATE_STATE") {
-    if (value.target === "GAME_CLEAR") {
+  if (value.type === WAS_EVENT_TYPE.UPDATE_STATE) {
+    if (value.target === WAS_EVENT_STATE_TYPE.GAME_CLEAR) {
       return true;
     }
-    if (value.target === "CHAPTER") {
-      if (typeof value.value !== "number") {
+    if (value.target === WAS_EVENT_STATE_TYPE.CHAPTER) {
+      if (typeof value.chapter !== "number") {
         return false;
       }
       return true;
     }
 
-    if (value.target === "AREA_INVADED" || value.target === "AREA_MANAGED") {
+    if (
+      value.target === WAS_EVENT_STATE_TYPE.AREA_INVADED ||
+      value.target === WAS_EVENT_STATE_TYPE.AREA_MANAGED
+    ) {
       if (typeof value.area_id !== "string") {
         return false;
       }
@@ -196,7 +207,10 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
       }
       return true;
     }
-    if (value.target === "CHARACTER_FRIENDLY") {
+    if (
+      value.target === WAS_EVENT_STATE_TYPE.CHARACTER_FRIENDLY ||
+      value.target === WAS_EVENT_STATE_TYPE.CHARACTER_ALIVE
+    ) {
       if (typeof value.character_id !== "string") {
         return false;
       }
@@ -208,7 +222,7 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     return false;
   }
 
-  if (value.type === "CHANGE_PAGE") {
+  if (value.type === WAS_EVENT_TYPE.CHANGE_PAGE) {
     if (!["MAP", "AREA", "ENDING"].includes(value.page_id)) {
       return false;
     }
@@ -219,36 +233,36 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
 }
 
 export type WasEventAliveConditionDefine = {
-  type: "ALIVE";
+  type: WAS_EVENT_CONDITION_TYPE.ALIVE;
   character_id: string;
   value: boolean;
   and?: WasEventConditionDefine;
 };
 
 export type WasEventFriendlyConditionDefine = {
-  type: "FRIENDLY";
+  type: WAS_EVENT_CONDITION_TYPE.FRIENDLY;
   character_id: string;
   value: boolean;
   and?: WasEventConditionDefine;
 };
 
 export type WasEventInvadeConditionDefine = {
-  type: "INVADE";
+  type: WAS_EVENT_CONDITION_TYPE.INVADE;
   area_id: string;
   value: boolean;
   and?: WasEventConditionDefine;
 };
 
 export type WasEventManageConditionDefine = {
-  type: "MANAGE";
+  type: WAS_EVENT_CONDITION_TYPE.MANAGE;
   area_id: string;
   value: boolean;
   and?: WasEventConditionDefine;
 };
 
 export type WasEventChapterConditionDefine = {
-  type: "CHAPTER";
-  value: number;
+  type: WAS_EVENT_CONDITION_TYPE.CHAPTER;
+  chapter: number;
   operator: "eq" | "ge" | "le" | "gt" | "lt";
   and?: WasEventConditionDefine;
 };
@@ -267,7 +281,7 @@ export function isWasEventConditionDefine(
     return false;
   }
 
-  if (value.type === "ALIVE") {
+  if (value.type === WAS_EVENT_CONDITION_TYPE.ALIVE) {
     if (typeof value.character_id !== "string") {
       return false;
     }
@@ -280,7 +294,7 @@ export function isWasEventConditionDefine(
     return true;
   }
 
-  if (value.type === "FRIENDLY") {
+  if (value.type === WAS_EVENT_CONDITION_TYPE.FRIENDLY) {
     if (typeof value.character_id !== "string") {
       return false;
     }
@@ -293,7 +307,7 @@ export function isWasEventConditionDefine(
     return true;
   }
 
-  if (value.type === "INVADE") {
+  if (value.type === WAS_EVENT_CONDITION_TYPE.INVADE) {
     if (typeof value.area_id !== "string") {
       return false;
     }
@@ -306,7 +320,7 @@ export function isWasEventConditionDefine(
     return true;
   }
 
-  if (value.type === "MANAGE") {
+  if (value.type === WAS_EVENT_CONDITION_TYPE.MANAGE) {
     if (typeof value.area_id !== "string") {
       return false;
     }
@@ -319,8 +333,8 @@ export function isWasEventConditionDefine(
     return true;
   }
 
-  if (value.type === "CHAPTER") {
-    if (typeof value.value === "number") {
+  if (value.type === WAS_EVENT_CONDITION_TYPE.CHAPTER) {
+    if (typeof value.chapter !== "number") {
       return false;
     }
     if (!["eq", "ge", "le", "gt", "lt"].includes(value.operator)) {
@@ -334,13 +348,13 @@ export function isWasEventConditionDefine(
   return false;
 }
 
-export interface WasEventTriggerDefine extends FirebaseStorageModel {
+export type WasEventTriggerDefine = {
   id: string;
   description?: string;
   event: WasEventDefine;
   conditions: WasEventConditionDefine[];
   repeat?: boolean;
-}
+};
 
 export function isWasEventTriggerDefine(
   value: any
@@ -349,13 +363,13 @@ export function isWasEventTriggerDefine(
     return false;
   }
 
-  if (typeof value.id !== "boolean") {
+  if (typeof value.id !== "string") {
     return false;
   }
 
   if (
     value.description !== undefined &&
-    typeof value.description !== "boolean"
+    typeof value.description !== "string"
   ) {
     return false;
   }
