@@ -7,19 +7,7 @@ import {
 export type WasTalkEventDefine = {
   type: WAS_EVENT_TYPE.TALK;
   talk_id: string;
-  after_event?:
-    | {
-        type: "ANYWAY";
-        event_id: string;
-      }
-    | {
-        type: "SELECT_IS";
-        candidate: {
-          label: string;
-          value: string;
-          event_id: string;
-        }[];
-      };
+  after_event?: string;
 };
 
 export type WasBattleEventDefine = {
@@ -97,39 +85,13 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     if (typeof value.talk_id !== "string") {
       return false;
     }
-    if (value.after_event === undefined) {
-      return true;
-    }
-    if (typeof value.after_event !== "object" || value.after_event === null) {
+    if (
+      value.after_event !== undefined &&
+      typeof value.after_event !== "string"
+    ) {
       return false;
     }
-    if (value.after_event.type === "ANYWAY") {
-      if (typeof value.after_event.event_id !== "string") {
-        return false;
-      }
-      return true;
-    }
-    if (value.after_event.type === "SELECT_IS") {
-      if (!Array.isArray(value.after_event.candidate)) {
-        return false;
-      }
-      for (const next of value.after_event.candidate) {
-        if (typeof next !== "object" || next === null) {
-          return false;
-        }
-        if (typeof next.label !== "string") {
-          return false;
-        }
-        if (typeof next.value !== "string") {
-          return false;
-        }
-        if (typeof next.event_id !== "string") {
-          return false;
-        }
-      }
-      return true;
-    }
-    return false;
+    return true;
   }
 
   if (value.type === WAS_EVENT_TYPE.BATTLE) {
