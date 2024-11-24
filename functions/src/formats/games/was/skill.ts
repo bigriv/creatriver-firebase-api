@@ -1,5 +1,5 @@
-import { WAS_SKILL_TYPE, WAS_STATE_CONDITION } from "@/const/games/was/const";
 import { FirebaseStorageModel } from "@/formats/fsmodel";
+import { WAS_SKILL_TYPE, WAS_STATE_CONDITION } from "@/const/games/was/const";
 
 export interface WasSkillDefine extends FirebaseStorageModel {
   id: string;
@@ -20,63 +20,48 @@ export function isWasSkillDefine(value: any): value is WasSkillDefine {
   if (typeof value.name !== "string") {
     return false;
   }
-  if (typeof value.description !== "string") {
-    return false;
-  }
   if (value.se !== undefined && typeof value.se !== "string") {
     return false;
   }
   if (value.animation !== undefined && typeof value.animation !== "string") {
     return false;
   }
+  if (typeof value.description !== "string") {
+    return false;
+  }
   if (!Array.isArray(value.effects)) {
     return false;
   }
-  if (!value.effects.every((effect: any) => isWasSkillEffectDefine(effect))) {
+  if (value.effects.some((effect: any) => !isWasSkillEffectDefine(effect))) {
     return false;
   }
   return true;
 }
 
-type WasSKillAVDDamegeEffectDefine = {
-  type: WAS_SKILL_TYPE.ATTACK_VS_DEFFECE_DAMAGE;
-  power: number;
-  hit_rate: number;
+type WasSkillDamageEffectDefine = {
+  type: WAS_SKILL_TYPE.DAMAGE;
+  damage_formula: string;
+  hit_rate_formula: string;
 };
-
-type WasSKillConstDamegeEffectDefine = {
-  type: WAS_SKILL_TYPE.CONST_DAMAGE;
-  amount: number;
-  hit_rate: number;
+type WasSkillHealEffectDefine = {
+  type: WAS_SKILL_TYPE.HEAL;
+  heal_formula: string;
 };
-
-type WasSkillConstHealEffectDefine = {
-  type: WAS_SKILL_TYPE.CONST_HEAL;
-  amount: number;
-};
-
-type WasSkillRateHealEffectDefine = {
-  type: WAS_SKILL_TYPE.RATE_HEAL;
-  rate: number;
-};
-
 type WasSkillGrantStateConditionEffectDefine = {
   type: WAS_SKILL_TYPE.GRANT_STATE_CONDITION;
   state_condition: WAS_STATE_CONDITION;
-  hit_rate: number;
+  hit_rate_formula: string;
 };
 
 type WasSkillReleaseStateConditionEffectDefine = {
   type: WAS_SKILL_TYPE.RELEASE_STATE_CONDITION;
   state_conditions: WAS_STATE_CONDITION[];
-  hit_rate: number;
+  hit_rate_formula: string;
 };
 
 export type WasSkillEffectDefine = (
-  | WasSKillAVDDamegeEffectDefine
-  | WasSKillConstDamegeEffectDefine
-  | WasSkillConstHealEffectDefine
-  | WasSkillRateHealEffectDefine
+  | WasSkillDamageEffectDefine
+  | WasSkillHealEffectDefine
   | WasSkillGrantStateConditionEffectDefine
   | WasSkillReleaseStateConditionEffectDefine
 ) & {
@@ -102,45 +87,28 @@ export function isWasSkillEffectDefine(obj: any): obj is WasSkillEffectDefine {
     return false;
   }
 
-  if (obj.type === WAS_SKILL_TYPE.ATTACK_VS_DEFFECE_DAMAGE) {
-    if (typeof obj.power !== "number") {
+  if (obj.type === WAS_SKILL_TYPE.DAMAGE) {
+    if (typeof obj.damage_formula !== "string") {
       return false;
     }
-    if (typeof obj.hit_rate !== "number") {
-      return false;
-    }
-    return true;
-  }
-
-  if (obj.type === WAS_SKILL_TYPE.CONST_DAMAGE) {
-    if (typeof obj.amount !== "number") {
-      return false;
-    }
-    if (typeof obj.hit_rate !== "number") {
+    if (typeof obj.hit_rate_formula !== "string") {
       return false;
     }
     return true;
   }
 
-  if (obj.type === WAS_SKILL_TYPE.CONST_HEAL) {
-    if (typeof obj.amount !== "number") {
-      return false;
-    }
-    return true;
-  }
-
-  if (obj.type === WAS_SKILL_TYPE.RATE_HEAL) {
-    if (typeof obj.rate !== "number") {
+  if (obj.type === WAS_SKILL_TYPE.HEAL) {
+    if (typeof obj.heal_formula !== "string") {
       return false;
     }
     return true;
   }
 
   if (obj.type === WAS_SKILL_TYPE.GRANT_STATE_CONDITION) {
-    if (typeof obj.state_condition !== "number") {
+    if (typeof obj.state_condition !== "string") {
       return false;
     }
-    if (typeof obj.hit_rate !== "number") {
+    if (typeof obj.hit_rate_formula !== "string") {
       return false;
     }
     return true;
@@ -150,10 +118,10 @@ export function isWasSkillEffectDefine(obj: any): obj is WasSkillEffectDefine {
     if (!Array.isArray(obj.state_conditions)) {
       return false;
     }
-    if (!obj.state_condition.every((c: any) => typeof c === "number")) {
+    if (!obj.state_condition.every((c: any) => typeof c === "string")) {
       return false;
     }
-    if (typeof obj.hit_rate !== "number") {
+    if (typeof obj.hit_rate_formula !== "string") {
       return false;
     }
     return true;

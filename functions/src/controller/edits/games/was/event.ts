@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { isWasEventTriggerDefine } from "@/formats/games/was/event";
 import { WasEventRepositoryIf } from "@/repositories/edits/games/was";
+import { isWasEventDefine } from "@/formats/games/was/event";
 
 export class EditWasEventController {
   private repository: WasEventRepositoryIf;
@@ -32,7 +32,7 @@ export class EditWasEventController {
   async post(req: Request, res: Response) {
     try {
       const json = req.body;
-      if (!isWasEventTriggerDefine(json)) {
+      if (!isWasEventDefine(json)) {
         res.status(400).send("Bad Request. The event is not event format.");
         return;
       }

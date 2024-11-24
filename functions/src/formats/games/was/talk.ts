@@ -1,13 +1,13 @@
 import { FirebaseStorageModel } from "@/formats/fsmodel";
 
 export type WasTalkMessageDefine = {
+  talker?: string;
+  texts: string[];
+  speed?: number;
   leftImage?: string;
   centerImage?: string;
   rightImage?: string;
-  talker?: string;
-  texts: string[];
   sound?: string;
-  speed?: number;
 };
 
 export interface WasTalkDefine extends FirebaseStorageModel {
@@ -16,10 +16,9 @@ export interface WasTalkDefine extends FirebaseStorageModel {
   messages: WasTalkMessageDefine[];
   selectOptions?: {
     label: string;
-    value: string;
-    eventId: string;
+    trigger_id: string;
   }[];
-  afterEventId?: string;
+  next?: string;
 }
 
 export function isWasTalkDefine(value: any): value is WasTalkDefine {
@@ -51,6 +50,10 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
     if (!e.texts.every((text: any) => typeof text === "string")) {
       return false;
     }
+    // speedが設定されていて数値でなければ不正フォーマット
+    if (e.speed !== undefined && typeof e.speed !== "number") {
+      return false;
+    }
     if (e.leftImage !== undefined && typeof e.leftImage !== "string") {
       return false;
     }
@@ -63,10 +66,6 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
 
     // soundが設定されていて文字列でなければ不正フォーマット
     if (e.sound !== undefined && typeof e.sound !== "string") {
-      return false;
-    }
-    // speedが設定されていて数値でなければ不正フォーマット
-    if (e.speed !== undefined && typeof e.speed !== "number") {
       return false;
     }
   }
@@ -84,18 +83,12 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
     if (typeof option.label !== "string") {
       return false;
     }
-    if (typeof option.value !== "string") {
-      return false;
-    }
-    if (typeof option.eventId !== "string") {
+    if (typeof option.trigger_id !== "string") {
       return false;
     }
   }
-  // 次のイベントが設定されている場合のフォーマットチェック
-  if (
-    value.afterEventId !== undefined &&
-    typeof value.afterEventId !== "string"
-  ) {
+  // 次の会話が設定されている場合のフォーマットチェック
+  if (value.next !== undefined && typeof value.next !== "string") {
     return false;
   }
 
