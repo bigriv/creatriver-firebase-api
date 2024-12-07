@@ -11,6 +11,7 @@ import { EditWasBattleController } from "@/controller/edits/games/was/battle";
 import { EditWasSkillController } from "@/controller/edits/games/was/skill";
 import { EditWasEventController } from "@/controller/edits/games/was/event";
 import { EditWasEventTriggerController } from "@/controller/edits/games/was/trigger";
+import { EditWasAreaController } from "@/controller/edits/games/was/area";
 
 admin.initializeApp();
 
@@ -108,6 +109,24 @@ app.post("/edits/games/was/trigger", (req, res) =>
 );
 app.delete("/edits/games/was/trigger/:id", (req, res) =>
   editWasEventTriggerController.delete(req, res)
+);
+
+const editWasAreaController = new EditWasAreaController(
+  FirebaseStorageRepositoryBuilder.build(
+    bucket,
+    "area",
+    "gameofus/games/was",
+    "gameofus/games/was/backups/areas"
+  )
+);
+app.get("/edits/games/was/area", (req, res) =>
+  editWasAreaController.get(req, res)
+);
+app.post("/edits/games/was/area", (req, res) =>
+  editWasAreaController.post(req, res)
+);
+app.delete("/edits/games/was/area/:id", (req, res) =>
+  editWasAreaController.delete(req, res)
 );
 
 export const api = functions.https.onRequest(app);

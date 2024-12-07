@@ -23,6 +23,7 @@ export enum WAS_EVENT_CONDITION_TYPE {
 }
 
 export enum WAS_AREA_STATE_TYPE {
+  HIDDEN = "HIDDEN",
   NEUTRAL = "NEUTRAL",
   INVADE = "INVADE",
   MANAGE = "MANAGE",
