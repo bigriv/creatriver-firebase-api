@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "serve": "npm --prefix ./functions run serve"
+  }
+}
