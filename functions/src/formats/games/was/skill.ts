@@ -5,8 +5,6 @@ export interface WasSkillDefine extends FirebaseStorageModel {
   id: string;
   name: string;
   description: string;
-  se?: string;
-  animation?: string;
   effects: WasSkillEffectDefine[];
 }
 
@@ -18,12 +16,6 @@ export function isWasSkillDefine(value: any): value is WasSkillDefine {
     return false;
   }
   if (typeof value.name !== "string") {
-    return false;
-  }
-  if (value.se !== undefined && typeof value.se !== "string") {
-    return false;
-  }
-  if (value.animation !== undefined && typeof value.animation !== "string") {
     return false;
   }
   if (typeof value.description !== "string") {
