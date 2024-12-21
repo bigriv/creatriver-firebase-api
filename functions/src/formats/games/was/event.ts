@@ -1,5 +1,9 @@
 import { FirebaseStorageModel } from "@/formats/fsmodel";
 import {
+  isWasMovePatternDefine,
+  WasMovePatternDefine,
+} from "@/formats/games/was/move";
+import {
   WAS_AREA_STATE_TYPE,
   WAS_CHARACTER_STATE_TYPE,
   WAS_EVENT_STATE_TYPE,
@@ -52,8 +56,16 @@ export type WasLearnSkillEventDefine = {
 export type WasUpdateAllyEventDefine = {
   type: WAS_EVENT_TYPE.UPDATE_ALLY;
   character_id: string;
-  value: boolean;
-};
+} & (
+  | {
+      value: "join";
+      character_name: string;
+      move_patterns: WasMovePatternDefine[];
+    }
+  | {
+      value: "leave";
+    }
+);
 
 export type WasChangePageEventDefine = {
   type: WAS_EVENT_TYPE.CHANGE_PAGE;
@@ -125,10 +137,19 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
     if (typeof value.character_id !== "string") {
       return false;
     }
-    if (typeof value.value !== "boolean") {
-      return false;
+    if (value.value === "join") {
+      if (!Array.isArray(value.move_patterns)) {
+        return false;
+      }
+      if (!value.move_patterns.every((p: any) => isWasMovePatternDefine(p))) {
+        return false;
+      }
+      return true;
     }
-    return true;
+    if (value.value === "leave") {
+      return true;
+    }
+    return false;
   }
 
   if (value.type === WAS_EVENT_TYPE.UPDATE_STATE) {

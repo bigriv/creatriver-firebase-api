@@ -1,5 +1,5 @@
 import { FirebaseStorageModel } from "@/formats/fsmodel";
-import { WAS_OPERATOR } from "@/const/games/was/const";
+import { isWasMovePatternDefine, WasMovePatternDefine } from "@/formats/games/was/move";
 
 export interface WasBattleDefine extends FirebaseStorageModel {
   id: string;
@@ -48,6 +48,11 @@ export function isWasBattleDefine(value: any): value is WasBattleDefine {
 export type WasBattlerDefine = {
   id: string;
   name: string;
+  allys: {
+    id: string;
+    name: string;
+    move_patterns: WasMovePatternDefine[];
+  }[];
   skills: string[];
   status: {
     life: number;
@@ -59,14 +64,7 @@ export type WasBattlerDefine = {
 
 export type WasAutomaticBattlerDefine = WasBattlerDefine & {
   visual: string;
-  move_pattern: {
-    condition: {
-      left: string;
-      operator: WAS_OPERATOR;
-      right: string;
-    };
-    candidate: string[];
-  }[];
+  move_patterns: WasMovePatternDefine[];
 };
 
 export function isWasBattlerDefine(value: any): value is WasBattlerDefine {
@@ -79,12 +77,35 @@ export function isWasBattlerDefine(value: any): value is WasBattlerDefine {
   if (typeof value.name !== "string") {
     return false;
   }
+
+  if (!Array.isArray(value.allys)) {
+    return false;
+  }
+  for (const ally of value.allys) {
+    if (typeof ally !== "object" || ally === null) {
+      return false;
+    }
+    if (typeof ally.id !== "string") {
+      return false;
+    }
+    if (typeof ally.name !== "string") {
+      return false;
+    }
+    if (!Array.isArray(ally.move_patterns)) {
+      return false;
+    }
+    if (!ally.move_patterns.every((p: any) => isWasMovePatternDefine(p))) {
+      return false;
+    }
+  }
+
   if (!Array.isArray(value.skills)) {
     return false;
   }
   if (!value.skills.every((skill: any) => typeof skill === "string")) {
     return false;
   }
+
   if (typeof value.status !== "object" || value.status === null) {
     return false;
   }
@@ -113,31 +134,12 @@ export function isWasAutomaticBattlerDefine(
   if (typeof value.visual !== "string") {
     return false;
   }
-  if (!Array.isArray(value.move_pattern)) {
+  if (!Array.isArray(value.move_patterns)) {
     return false;
   }
-  for (const p of value.move_pattern) {
-    if (typeof p !== "object" || p === null) {
-      return false;
-    }
-    if (typeof p.condition !== "object" || p.condition === null) {
-      return false;
-    }
-    if (typeof p.condition.left !== "string") {
-      return false;
-    }
-    if (!Object.values(WAS_OPERATOR).includes(p.condition.operator)) {
-      return false;
-    }
-    if (typeof p.condition.right !== "string") {
-      return false;
-    }
-    if (!Array.isArray(p.candidate)) {
-      return false;
-    }
-    if (!p.candidate.every((c: any) => typeof c === "string")) {
-      return false;
-    }
+
+  if (!value.move_patterns.every((p: any) => isWasMovePatternDefine(p))) {
+    return false;
   }
 
   if (!isWasBattlerDefine(value)) {
