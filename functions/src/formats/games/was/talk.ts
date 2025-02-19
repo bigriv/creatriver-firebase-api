@@ -2,7 +2,7 @@ import { FirebaseStorageModel } from "@/formats/fsmodel";
 
 export type WasTalkMessageDefine = {
   talker?: string;
-  texts: string[];
+  text: string;
   speed?: number;
   leftImage?: string;
   centerImage?: string;
@@ -44,10 +44,7 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
       return false;
     }
     // テキストが文字列の配列でなければ不正フォーマット
-    if (!Array.isArray(e.texts)) {
-      return false;
-    }
-    if (!e.texts.every((text: any) => typeof text === "string")) {
+    if (e.text !== "string") {
       return false;
     }
     // speedが設定されていて数値でなければ不正フォーマット
