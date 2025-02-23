@@ -5,6 +5,7 @@ import { FirebaseStorageModel } from "@/formats/fsmodel";
 export interface FirebaseStorageRepositoryIf<T extends FirebaseStorageModel> {
   findAll(): Promise<KeyValue<T>>;
   save(data: T): Promise<void>;
+  saveAll(data: Record<string, T>): Promise<void>;
   deleteByKey(key: string): Promise<void>;
 }
 
@@ -51,6 +52,8 @@ export class FirebaseStorageRepositoryBuilder {
       findAll: () => this.findAll<T>(bucket, fileName, filePath),
       save: (data: T) =>
         this.save(bucket, fileName, filePath, backupPath, data),
+      saveAll: (data: Record<string, T>) =>
+        this.saveAll(bucket, fileName, filePath, backupPath, data),
       deleteByKey: (id: string) =>
         this.deleteByKey(bucket, fileName, filePath, backupPath, id),
     };
@@ -94,6 +97,37 @@ export class FirebaseStorageRepositoryBuilder {
 
   /**
    * ファイルにデータを追加・更新して保存する
+   *
+   * @param {Bucket} bucket Firebase StorageのBucket
+   * @param {string} fileName 操作を行うファイルの名前(拡張子なし)
+   * @param {string} filePath 操作を行うファイルが配置されるディレクトリのパス
+   * @param {string} backupPath バックアップファイルを配するディレクトリのパス
+   * @param {FirebaseStorageModel} data 追加するデータ
+   */
+  private static async saveAll<T extends FirebaseStorageModel>(
+    bucket: Bucket,
+    fileName: string,
+    filePath: string,
+    backupPath: string,
+    data: Record<string, T>
+  ): Promise<void> {
+    const fileRef = bucket.file(`${filePath}/${fileName}.json`);
+    const [exists] = await fileRef.exists();
+
+    // ファイルが既に存在する場合はバックアップを作成する
+    if (exists) {
+      const backFileName = `${fileName}-${Date.now()}.json`;
+      const backupFileRef = bucket.file(`${backupPath}/${backFileName}`);
+
+      await fileRef.copy(backupFileRef);
+    }
+
+    // ファイルを保存
+    await fileRef.save(JSON.stringify(data));
+  }
+
+  /**
+   * ファイルを完全上書きで保存する
    *
    * @param {Bucket} bucket Firebase StorageのBucket
    * @param {string} fileName 操作を行うファイルの名前(拡張子なし)
