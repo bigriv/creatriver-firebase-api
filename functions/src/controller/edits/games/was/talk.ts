@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { isWasTalkDefine } from "@/formats/games/was/talk";
+import { JsonUtils } from "@/utils/json";
+import { isWasTalkDefine, WasTalkDefine } from "@/formats/games/was/talk";
 import { WasTalkRepositoryIf } from "@/repositories/edits/games/was";
 
 export class EditWasTalkController {
@@ -32,12 +33,22 @@ export class EditWasTalkController {
   async post(req: Request, res: Response) {
     try {
       const json = req.body;
-      if (!isWasTalkDefine(json)) {
-        res.status(400).send("Bad Request. The talk is not talk format.");
+      if (!JsonUtils.isKeyValue(json)) {
+        res.status(400).send("Bad Request. The talk is not key-value format.");
         return;
       }
+      const values: Record<string, WasTalkDefine> = {};
+      for (const key of Object.keys(json)) {
+        if (!isWasTalkDefine(json[key])) {
+          console.warn(
+            `The key '${key}' is incorrect format. ${JSON.stringify(json[key])}`
+          );
+          continue;
+        }
+        values[key] = json[key];
+      }
 
-      await this.repository.save(json);
+      await this.repository.saveAll(values);
       res.status(200).send("Success");
     } catch (error) {
       console.error(error);

@@ -14,11 +14,6 @@ export interface WasTalkDefine extends FirebaseStorageModel {
   id: string;
   description?: string;
   messages: WasTalkMessageDefine[];
-  selectOptions?: {
-    label: string;
-    trigger_id: string;
-  }[];
-  next?: string;
 }
 
 export function isWasTalkDefine(value: any): value is WasTalkDefine {
@@ -43,8 +38,8 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
     if (e.talker !== undefined && typeof e.talker !== "string") {
       return false;
     }
-    // テキストが文字列の配列でなければ不正フォーマット
-    if (e.text !== "string") {
+    // テキストが文字列でなければ不正フォーマット
+    if (typeof e.text !== "string") {
       return false;
     }
     // speedが設定されていて数値でなければ不正フォーマット
@@ -65,28 +60,6 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
     if (e.sound !== undefined && typeof e.sound !== "string") {
       return false;
     }
-  }
-
-  if (
-    value.selectOptions !== undefined &&
-    !Array.isArray(value.selectOptions)
-  ) {
-    return false;
-  }
-  for (const option of value.selectOptions ?? []) {
-    if (typeof option !== "object" || option === null) {
-      return false;
-    }
-    if (typeof option.label !== "string") {
-      return false;
-    }
-    if (typeof option.trigger_id !== "string") {
-      return false;
-    }
-  }
-  // 次の会話が設定されている場合のフォーマットチェック
-  if (value.next !== undefined && typeof value.next !== "string") {
-    return false;
   }
 
   // 全てのフォーマットチェックを通れば正しいフォーマットとみなす

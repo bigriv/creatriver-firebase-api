@@ -13,6 +13,7 @@ import {
 export type WasTalkEventDefine = {
   type: WAS_EVENT_TYPE.TALK;
   talk_id: string;
+  selections: { label: string; events: string[] }[];
 };
 
 export type WasBattleEventDefine = {
@@ -105,6 +106,20 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
   if (value.type === WAS_EVENT_TYPE.TALK) {
     if (typeof value.talk_id !== "string") {
       return false;
+    }
+    if (!Array.isArray(value.selections)) {
+      return false;
+    }
+    for (const selection of value.selections) {
+      if (typeof selection.label !== "string") {
+        return false;
+      }
+      if (!Array.isArray(selection.events)) {
+        return false;
+      }
+      if (!selection.events.every((event: any) => typeof event === "string")) {
+        return false;
+      }
     }
     return true;
   }
