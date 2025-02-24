@@ -18,8 +18,10 @@ admin.initializeApp();
 const app = express();
 const bucket = admin.storage().bucket();
 
-// TODO: ローカル起動の場合のみ実行するように修正する
-initLocalStorage(bucket);
+if (process.env.INIT_STORAGE) {
+  // ローカル起動の場合のみfirebase storageを初期化する
+  initLocalStorage(bucket);
+}
 
 const editWasTalkController = new EditWasTalkController(
   FirebaseStorageRepositoryBuilder.build(
