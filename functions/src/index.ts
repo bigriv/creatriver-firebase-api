@@ -13,11 +13,17 @@ import { EditWasEventController } from "@/controller/edits/games/was/event";
 import { EditWasEventTriggerController } from "@/controller/edits/games/was/trigger";
 import { EditWasAreaController } from "@/controller/edits/games/was/area";
 
+const dotenv = require("dotenv");
+dotenv.config({
+  path: process.env.NODE_ENV === "production" ? ".env.prod" : ".env.local",
+});
+
 admin.initializeApp();
 
 const app = express();
 const bucket = admin.storage().bucket();
 
+console.log("init storage", process.env.INIT_STORAGE);
 if (process.env.INIT_STORAGE) {
   // ローカル起動の場合のみfirebase storageを初期化する
   initLocalStorage(bucket);
