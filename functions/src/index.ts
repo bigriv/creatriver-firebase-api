@@ -23,118 +23,85 @@ admin.initializeApp();
 const app = express();
 const bucket = admin.storage().bucket();
 
-console.log("init storage", process.env.INIT_STORAGE);
 if (process.env.INIT_STORAGE) {
   // ローカル起動の場合のみfirebase storageを初期化する
   initLocalStorage(bucket);
 }
 
-const editWasTalkController = new EditWasTalkController(
-  FirebaseStorageRepositoryBuilder.build(
-    bucket,
-    "talk",
-    "gameofus/games/was",
-    "gameofus/games/was/backups/talks"
-  )
-);
-app.get("/edits/games/was/talk", (req, res) =>
-  editWasTalkController.get(req, res)
-);
-app.post("/edits/games/was/talk", (req, res) =>
-  editWasTalkController.post(req, res)
-);
-app.delete("/edits/games/was/talk/:id", (req, res) =>
-  editWasTalkController.delete(req, res)
-);
+/**
+ * 指定されたパスに対してコントローラーを登録する, POST, DELETE のルートを設定する。
+ *
+ * @param {string} path ルーティングのベースパス
+ * @param {new (...args: any[]) => any} ControllerClass - インスタンス化するコントローラークラス
+ * @param {string} storageKey ストレージのキー（データの識別子）
+ * @param {string} storagePath ストレージの保存パス
+ * @param {string} backupPath バックアップデータの保存パス
+ */
+const registerController = (
+  path: string,
+  ControllerClass: any,
+  storageKey: string,
+  storagePath: string,
+  backupPath: string
+) => {
+  const router = express.Router();
+  const controller = new ControllerClass(
+    FirebaseStorageRepositoryBuilder.build(
+      bucket,
+      storageKey,
+      storagePath,
+      backupPath
+    )
+  );
 
-const editWasBattleController = new EditWasBattleController(
-  FirebaseStorageRepositoryBuilder.build(
-    bucket,
-    "battle",
-    "gameofus/games/was",
-    "gameofus/games/was/backups/battles"
-  )
-);
-app.get("/edits/games/was/battle", (req, res) =>
-  editWasBattleController.get(req, res)
-);
-app.post("/edits/games/was/battle", (req, res) =>
-  editWasBattleController.post(req, res)
-);
-app.delete("/edits/games/was/battle/:id", (req, res) =>
-  editWasBattleController.delete(req, res)
-);
+  router.get("/", (req, res) => controller.get(req, res));
+  router.post("/", (req, res) => controller.post(req, res));
+  router.delete("/:id", (req, res) => controller.delete(req, res));
 
-const editWasSkillController = new EditWasSkillController(
-  FirebaseStorageRepositoryBuilder.build(
-    bucket,
-    "skill",
-    "gameofus/games/was",
-    "gameofus/games/was/backups/skills"
-  )
-);
-app.get("/edits/games/was/skill", (req, res) =>
-  editWasSkillController.get(req, res)
-);
-app.post("/edits/games/was/skill", (req, res) =>
-  editWasSkillController.post(req, res)
-);
-app.delete("/edits/games/was/skill/:id", (req, res) =>
-  editWasSkillController.delete(req, res)
-);
+  app.use(path, router);
+};
 
-const editWasEventController = new EditWasEventController(
-  FirebaseStorageRepositoryBuilder.build(
-    bucket,
-    "event",
-    "gameofus/games/was",
-    "gameofus/games/was/backups/events"
-  )
+registerController(
+  "/edits/games/was/talk",
+  EditWasTalkController,
+  "talk",
+  "gameofus/games/was",
+  "gameofus/games/was/backups/talks"
 );
-app.get("/edits/games/was/event", (req, res) =>
-  editWasEventController.get(req, res)
+registerController(
+  "/edits/games/was/battle",
+  EditWasBattleController,
+  "battle",
+  "gameofus/games/was",
+  "gameofus/games/was/backups/battles"
 );
-app.post("/edits/games/was/event", (req, res) =>
-  editWasEventController.post(req, res)
+registerController(
+  "/edits/games/was/skill",
+  EditWasSkillController,
+  "skill",
+  "gameofus/games/was",
+  "gameofus/games/was/backups/skills"
 );
-app.delete("/edits/games/was/event/:id", (req, res) =>
-  editWasEventController.delete(req, res)
+registerController(
+  "/edits/games/was/event",
+  EditWasEventController,
+  "event",
+  "gameofus/games/was",
+  "gameofus/games/was/backups/events"
 );
-
-const editWasEventTriggerController = new EditWasEventTriggerController(
-  FirebaseStorageRepositoryBuilder.build(
-    bucket,
-    "trigger",
-    "gameofus/games/was",
-    "gameofus/games/was/backups/triggers"
-  )
+registerController(
+  "/edits/games/was/trigger",
+  EditWasEventTriggerController,
+  "trigger",
+  "gameofus/games/was",
+  "gameofus/games/was/backups/triggers"
 );
-app.get("/edits/games/was/trigger", (req, res) =>
-  editWasEventTriggerController.get(req, res)
-);
-app.post("/edits/games/was/trigger", (req, res) =>
-  editWasEventTriggerController.post(req, res)
-);
-app.delete("/edits/games/was/trigger/:id", (req, res) =>
-  editWasEventTriggerController.delete(req, res)
-);
-
-const editWasAreaController = new EditWasAreaController(
-  FirebaseStorageRepositoryBuilder.build(
-    bucket,
-    "area",
-    "gameofus/games/was",
-    "gameofus/games/was/backups/areas"
-  )
-);
-app.get("/edits/games/was/area", (req, res) =>
-  editWasAreaController.get(req, res)
-);
-app.post("/edits/games/was/area", (req, res) =>
-  editWasAreaController.post(req, res)
-);
-app.delete("/edits/games/was/area/:id", (req, res) =>
-  editWasAreaController.delete(req, res)
+registerController(
+  "/edits/games/was/area",
+  EditWasAreaController,
+  "area",
+  "gameofus/games/was",
+  "gameofus/games/was/backups/areas"
 );
 
 export const api = functions.https.onRequest(app);
