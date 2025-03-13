@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
+import { JsonUtils } from "@/utils/json";
 import { WasEventRepositoryIf } from "@/repositories/edits/games/was";
-import { isWasEventDefine } from "@/formats/games/was/event";
+import { isWasEventDefine, WasEventDefine } from "@/formats/games/was/event";
 
 export class EditWasEventController {
   private repository: WasEventRepositoryIf;
@@ -32,12 +33,22 @@ export class EditWasEventController {
   async post(req: Request, res: Response) {
     try {
       const json = req.body;
-      if (!isWasEventDefine(json)) {
-        res.status(400).send("Bad Request. The event is not event format.");
+      if (!JsonUtils.isKeyValue(json)) {
+        res.status(400).send("Bad Request. The event is not key-value format.");
         return;
       }
+      const values: Record<string, WasEventDefine> = {};
+      for (const key of Object.keys(json)) {
+        if (!isWasEventDefine(json[key])) {
+          console.warn(
+            `The key '${key}' is incorrect format. ${JSON.stringify(json[key])}`
+          );
+          continue;
+        }
+        values[key] = json[key];
+      }
 
-      await this.repository.save(json);
+      await this.repository.saveAll(values);
       res.status(200).send("Success");
     } catch (error) {
       console.error(error);

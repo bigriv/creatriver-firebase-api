@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { isWasBattleDefine } from "@/formats/games/was/battle";
+import { JsonUtils } from "@/utils/json";
+import { isWasBattleDefine, WasBattleDefine } from "@/formats/games/was/battle";
 import { WasBattleRepositoryIf } from "@/repositories/edits/games/was";
 
 export class EditWasBattleController {
@@ -32,12 +33,22 @@ export class EditWasBattleController {
   async post(req: Request, res: Response) {
     try {
       const json = req.body;
-      if (!isWasBattleDefine(json)) {
-        res.status(400).send("Bad Request. The battle is not battle format.");
+      if (!JsonUtils.isKeyValue(json)) {
+        res.status(400).send("Bad Request. The battle is not key-value format.");
         return;
       }
+      const values: Record<string, WasBattleDefine> = {};
+      for (const key of Object.keys(json)) {
+        if (!isWasBattleDefine(json[key])) {
+          console.warn(
+            `The key '${key}' is incorrect format. ${JSON.stringify(json[key])}`
+          );
+          continue;
+        }
+        values[key] = json[key];
+      }
 
-      await this.repository.save(json);
+      await this.repository.saveAll(values);
       res.status(200).send("Success");
     } catch (error) {
       console.error(error);
