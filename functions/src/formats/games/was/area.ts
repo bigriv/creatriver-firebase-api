@@ -10,7 +10,6 @@ export interface WasAreaDefine extends FirebaseStorageModel {
   width: number;
   height: number;
   outsideVisual: string;
-  insideVisual: string;
   triggers: string[];
   characters: string[];
 }
@@ -42,9 +41,6 @@ export function isWasAreaDefine(value: any): value is WasAreaDefine {
     return false;
   }
   if (typeof value.outsideVisual !== "string") {
-    return false;
-  }
-  if (typeof value.insideVisual !== "string") {
     return false;
   }
   if (!Array.isArray(value.triggers)) {

@@ -13,6 +13,7 @@ export type WasTalkMessageDefine = {
 export interface WasTalkDefine extends FirebaseStorageModel {
   id: string;
   description?: string;
+  background?: string;
   messages: WasTalkMessageDefine[];
 }
 
@@ -29,7 +30,9 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
   ) {
     return false;
   }
-
+  if (value.background !== undefined && typeof value.background !== "string") {
+    return false;
+  }
   if (!Array.isArray(value.messages)) {
     return false;
   }

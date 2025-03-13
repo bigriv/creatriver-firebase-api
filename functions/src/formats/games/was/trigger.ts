@@ -142,5 +142,18 @@ export function isWasEventConditionDefine(
     return true;
   }
 
+  if (value.type === WAS_EVENT_CONDITION_TYPE.ACCOMPANY) {
+    if (typeof value.character_id !== "string") {
+      return false;
+    }
+    if (typeof value.value !== "boolean") {
+      return false;
+    }
+    if (value.and !== undefined && !isWasEventConditionDefine(value.and)) {
+      return false;
+    }
+    return true;
+  }
+
   return false;
 }
