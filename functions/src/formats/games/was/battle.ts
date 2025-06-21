@@ -10,8 +10,8 @@ export interface WasBattleDefine extends FirebaseStorageModel {
   id: string;
   description?: string;
   bgm?: string;
-  player?: WasBattlerDefine;
-  opponent: WasAutomaticBattlerDefine;
+  player?: WasPlayableMainBattlerDefine;
+  opponent: WasAutomaticMainBattlerDefine;
 }
 
 export function isWasBattleDefine(value: any): value is WasBattleDefine {
@@ -30,37 +30,43 @@ export function isWasBattleDefine(value: any): value is WasBattleDefine {
     return false;
   }
 
-  if (value.player !== undefined && !isWasPlayableBattlerDefine(value.player)) {
+  if (value.player !== undefined && !isWasPlayableMainBattlerDefine(value.player)) {
     return false;
   }
-  if (!isWasAutomaticBattlerDefine(value.opponent)) {
+  if (!isWasAutomaticMainBattlerDefine(value.opponent)) {
     return false;
   }
 
   return true;
 }
 
-export type WasBattlerDefine = {
+export type WasMainBattlerDefine<AllyType = { id: string; name: string }> = {
   id: string;
   name: string;
-  allys: {
-    id: string;
-    name: string;
-    move_patterns: WasMovePatternDefine[];
-  }[];
   status: WasStatusDefine;
+  allys: AllyType[];
 };
 
-export type WasPlayableBattlerDefine = WasBattlerDefine & {
+export type WasPlayableMainBattlerDefine = WasMainBattlerDefine<{
+  id: string;
+  name: string;
+  skills: string[];
+}> & {
   skills: string[];
 };
 
-export type WasAutomaticBattlerDefine = WasBattlerDefine & {
+export type WasAutomaticMainBattlerDefine = WasMainBattlerDefine<{
+  id: string;
+  name: string;
+  move_patterns: WasMovePatternDefine[];
+}> & {
   visual: string;
   move_patterns: WasMovePatternDefine[];
 };
 
-export function isWasBattlerDefine(value: any): value is WasBattlerDefine {
+export function isWasMainBattlerDefine(
+  value: any
+): value is WasMainBattlerDefine {
   if (!FormatUtils.isObject(value)) {
     return false;
   }
@@ -84,24 +90,17 @@ export function isWasBattlerDefine(value: any): value is WasBattlerDefine {
     if (typeof ally.name !== "string") {
       return false;
     }
-    if (!Array.isArray(ally.move_patterns)) {
-      return false;
-    }
-    if (!ally.move_patterns.every((p: any) => isWasMovePatternDefine(p))) {
-      return false;
-    }
   }
 
   if (!isWasStatusDefine(value.status)) {
     return false;
   }
-
   return true;
 }
 
-export function isWasPlayableBattlerDefine(
+export function isWasPlayableMainBattlerDefine(
   value: any
-): value is WasPlayableBattlerDefine {
+): value is WasPlayableMainBattlerDefine {
   if (!FormatUtils.isObject(value)) {
     return false;
   }
@@ -113,16 +112,31 @@ export function isWasPlayableBattlerDefine(
     return false;
   }
 
-  if (!isWasBattlerDefine(value)) {
+  if (!Array.isArray(value.allys)) {
+    return false;
+  }
+  for (const ally of value.allys) {
+    if (!FormatUtils.isObject(ally)) {
+      return false;
+    }
+    if (!Array.isArray(ally.skills)) {
+      return false;
+    }
+    if (ally.skills.some((skill: any) => typeof skill !== "string")) {
+      return false;
+    }
+  }
+
+  if (!isWasMainBattlerDefine(value)) {
     return false;
   }
 
   return true;
 }
 
-export function isWasAutomaticBattlerDefine(
+export function isWasAutomaticMainBattlerDefine(
   value: any
-): value is WasAutomaticBattlerDefine {
+): value is WasAutomaticMainBattlerDefine {
   if (!FormatUtils.isObject(value)) {
     return false;
   }
@@ -138,7 +152,22 @@ export function isWasAutomaticBattlerDefine(
     return false;
   }
 
-  if (!isWasBattlerDefine(value)) {
+  if (!Array.isArray(value.allys)) {
+    return false;
+  }
+  for (const ally of value.allys) {
+    if (!FormatUtils.isObject(ally)) {
+      return false;
+    }
+    if (!Array.isArray(ally.move_patterns)) {
+      return false;
+    }
+    if (!ally.move_patterns.every((p: any) => isWasMovePatternDefine(p))) {
+      return false;
+    }
+  }
+
+  if (!isWasMainBattlerDefine(value)) {
     return false;
   }
 

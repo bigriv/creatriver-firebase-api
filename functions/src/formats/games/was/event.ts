@@ -5,10 +5,6 @@ import {
   WAS_EVENT_STATE_TYPE,
   WAS_EVENT_TYPE,
 } from "@/const/games/was/const";
-import {
-  isWasMovePatternDefine,
-  WasMovePatternDefine,
-} from "@/formats/games/was/move";
 
 export type WasTalkEventDefine = {
   type: WAS_EVENT_TYPE.TALK;
@@ -62,7 +58,7 @@ export type WasUpdateAllyEventDefine = {
   | {
       value: "join";
       character_name: string;
-      move_patterns: WasMovePatternDefine[];
+      skills: string[];
     }
   | {
       value: "leave";
@@ -160,10 +156,10 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
       return false;
     }
     if (value.value === "join") {
-      if (!Array.isArray(value.move_patterns)) {
+      if (!Array.isArray(value.skills)) {
         return false;
       }
-      if (!value.move_patterns.every((p: any) => isWasMovePatternDefine(p))) {
+      if (!value.skills.every((skill: any) => typeof skill === "string")) {
         return false;
       }
       return true;
