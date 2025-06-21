@@ -12,6 +12,7 @@ import { EditWasSkillController } from "@/controller/edits/games/was/skill";
 import { EditWasEventController } from "@/controller/edits/games/was/event";
 import { EditWasEventTriggerController } from "@/controller/edits/games/was/trigger";
 import { EditWasAreaController } from "@/controller/edits/games/was/area";
+import { WasSaveController } from "@/controller/games/was/save";
 
 const dotenv = require("dotenv");
 dotenv.config({
@@ -104,4 +105,9 @@ registerController(
   "gameofus/games/was/backups/areas"
 );
 
+const wasSaveController = new WasSaveController();
+app.get("/games/was/save", (req, res) => wasSaveController.get(req, res));
+app.post("/games/was/save", (req, res) => wasSaveController.post(req, res));
+
+// functions.setGlobalOptions({ region: "asia-northeast1" });
 export const api = functions.https.onRequest(app);
