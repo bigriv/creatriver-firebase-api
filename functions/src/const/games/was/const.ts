@@ -53,7 +53,7 @@ export enum WAS_STATE_CONDITION {
 }
 
 export enum WAS_SKILL_TYPE {
-  ATTCK = "ATTACK",
+  ATTACK = "ATTACK",
   SUPPORT = "SUPPORT",
   OTHER = "OTHER",
 }
