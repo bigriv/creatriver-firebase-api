@@ -1,14 +1,14 @@
 import { FirebaseStorageModel } from "@/formats/fsmodel";
 import {
-  isWasMovePatternDefine,
-  WasMovePatternDefine,
-} from "@/formats/games/was/move";
-import {
   WAS_AREA_STATE_TYPE,
   WAS_CHARACTER_STATE_TYPE,
   WAS_EVENT_STATE_TYPE,
   WAS_EVENT_TYPE,
 } from "@/const/games/was/const";
+import {
+  isWasMovePatternDefine,
+  WasMovePatternDefine,
+} from "@/formats/games/was/move";
 
 export type WasTalkEventDefine = {
   type: WAS_EVENT_TYPE.TALK;
@@ -19,6 +19,7 @@ export type WasTalkEventDefine = {
 export type WasBattleEventDefine = {
   type: WAS_EVENT_TYPE.BATTLE;
   battle_id: string;
+  after: string[];
 };
 
 export type WasPlayAudioEventDefine = {
@@ -126,6 +127,12 @@ export function isWasEventDefine(value: any): value is WasEventDefine {
 
   if (value.type === WAS_EVENT_TYPE.BATTLE) {
     if (typeof value.battle_id !== "string") {
+      return false;
+    }
+    if (!Array.isArray(value.after)) {
+      return false;
+    }
+    if (!value.after.every((event: any) => typeof event === "string")) {
       return false;
     }
     return true;

@@ -1,3 +1,4 @@
+import { FormatUtils } from "@/utils/format";
 import { FirebaseStorageModel } from "@/formats/fsmodel";
 
 export interface WasAreaDefine extends FirebaseStorageModel {
@@ -7,15 +8,11 @@ export interface WasAreaDefine extends FirebaseStorageModel {
     x: number;
     y: number;
   };
-  width: number;
-  height: number;
-  outsideVisual: string;
   triggers: string[];
-  characters: string[];
 }
 
 export function isWasAreaDefine(value: any): value is WasAreaDefine {
-  if (typeof value !== "object" || value === null) {
+  if (!FormatUtils.isObject(value)) {
     return false;
   }
   if (typeof value.id !== "string") {
@@ -25,7 +22,7 @@ export function isWasAreaDefine(value: any): value is WasAreaDefine {
   if (typeof value.name !== "string") {
     return false;
   }
-  if (typeof value.position !== "object" || value.position === null) {
+  if (!FormatUtils.isObject(value)) {
     return false;
   }
   if (typeof value.position.x !== "number") {
@@ -34,27 +31,10 @@ export function isWasAreaDefine(value: any): value is WasAreaDefine {
   if (typeof value.position.y !== "number") {
     return false;
   }
-  if (typeof value.width !== "number") {
-    return false;
-  }
-  if (typeof value.height !== "number") {
-    return false;
-  }
-  if (typeof value.outsideVisual !== "string") {
-    return false;
-  }
   if (!Array.isArray(value.triggers)) {
     return false;
   }
   if (!value.triggers.every((trigger: any) => typeof trigger === "string")) {
-    return false;
-  }
-  if (!Array.isArray(value.characters)) {
-    return false;
-  }
-  if (
-    !value.characters.every((character: any) => typeof character === "string")
-  ) {
     return false;
   }
   return true;

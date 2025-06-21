@@ -1,3 +1,4 @@
+import { FormatUtils } from "@/utils/format";
 import { FirebaseStorageModel } from "@/formats/fsmodel";
 
 export type WasTalkMessageDefine = {
@@ -13,24 +14,25 @@ export type WasTalkMessageDefine = {
 export interface WasTalkDefine extends FirebaseStorageModel {
   id: string;
   description?: string;
+  bgm?: string;
   background?: string;
   messages: WasTalkMessageDefine[];
 }
 
 export function isWasTalkDefine(value: any): value is WasTalkDefine {
-  if (typeof value !== "object" || value === null) {
+  if (!FormatUtils.isObject(value)) {
     return false;
   }
   if (typeof value.id !== "string") {
     return false;
   }
-  if (
-    value.description !== undefined &&
-    typeof value.description !== "string"
-  ) {
+  if (!FormatUtils.isOptionalString(value.description)) {
     return false;
   }
-  if (value.background !== undefined && typeof value.background !== "string") {
+  if (!FormatUtils.isOptionalString(value.bgm)) {
+    return false;
+  }
+  if (!FormatUtils.isOptionalString(value.background)) {
     return false;
   }
   if (!Array.isArray(value.messages)) {
@@ -38,7 +40,7 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
   }
   for (const e of value.messages) {
     // 会話者が設定されていて文字列でなければ不正フォーマット
-    if (e.talker !== undefined && typeof e.talker !== "string") {
+    if (!FormatUtils.isOptionalString(e.talker)) {
       return false;
     }
     // テキストが文字列でなければ不正フォーマット
@@ -46,21 +48,21 @@ export function isWasTalkDefine(value: any): value is WasTalkDefine {
       return false;
     }
     // speedが設定されていて数値でなければ不正フォーマット
-    if (e.speed !== undefined && typeof e.speed !== "number") {
+    if (!FormatUtils.isOptionalNumber(e.speed)) {
       return false;
     }
-    if (e.leftImage !== undefined && typeof e.leftImage !== "string") {
+    if (!FormatUtils.isOptionalString(e.leftImage)) {
       return false;
     }
-    if (e.centerImage !== undefined && typeof e.centerImage !== "string") {
+    if (!FormatUtils.isOptionalString(e.centerImage)) {
       return false;
     }
-    if (e.rightImage !== undefined && typeof e.rightImage !== "string") {
+    if (!FormatUtils.isOptionalString(e.rightImage)) {
       return false;
     }
 
     // soundが設定されていて文字列でなければ不正フォーマット
-    if (e.sound !== undefined && typeof e.sound !== "string") {
+    if (!FormatUtils.isOptionalString(e.sound)) {
       return false;
     }
   }

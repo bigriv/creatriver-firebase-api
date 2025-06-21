@@ -51,11 +51,17 @@ type WasSkillReleaseStateConditionEffectDefine = {
   hit_rate_formula: string;
 };
 
+type WasSkillMessageEffectDefine = {
+  type: WAS_SKILL_TYPE.MESSAGE;
+  message: string;
+};
+
 export type WasSkillEffectDefine = (
   | WasSkillDamageEffectDefine
   | WasSkillHealEffectDefine
   | WasSkillGrantStateConditionEffectDefine
   | WasSkillReleaseStateConditionEffectDefine
+  | WasSkillMessageEffectDefine
 ) & {
   target: "activest" | "opponent";
   se?: string;
@@ -110,10 +116,17 @@ export function isWasSkillEffectDefine(obj: any): obj is WasSkillEffectDefine {
     if (!Array.isArray(obj.state_conditions)) {
       return false;
     }
-    if (!obj.state_condition.every((c: any) => typeof c === "string")) {
+    if (!obj.state_conditions.every((c: any) => typeof c === "string")) {
       return false;
     }
     if (typeof obj.hit_rate_formula !== "string") {
+      return false;
+    }
+    return true;
+  }
+
+  if (obj.type === WAS_SKILL_TYPE.MESSAGE) {
+    if (typeof obj.message !== "string") {
       return false;
     }
     return true;

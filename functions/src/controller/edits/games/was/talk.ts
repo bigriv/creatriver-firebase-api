@@ -38,14 +38,23 @@ export class EditWasTalkController {
         return;
       }
       const values: Record<string, WasTalkDefine> = {};
+      const errors = Array<string>();
       for (const key of Object.keys(json)) {
         if (!isWasTalkDefine(json[key])) {
-          console.warn(
-            `The key '${key}' is incorrect format. ${JSON.stringify(json[key])}`
-          );
+          errors.push(key);
           continue;
         }
         values[key] = json[key];
+      }
+      if (errors.length > 0) {
+        res
+          .status(400)
+          .send(
+            `Bad Request. The talk is incorrect format. Keys are '${errors.join(
+              ","
+            )}'`
+          );
+        return;
       }
 
       await this.repository.saveAll(values);

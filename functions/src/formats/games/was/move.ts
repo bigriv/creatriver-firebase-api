@@ -1,3 +1,4 @@
+import { FormatUtils } from "@/utils/format";
 import { WAS_OPERATOR } from "@/const/games/was/const";
 
 export type WasMovePatternDefine = {
@@ -12,10 +13,10 @@ export type WasMovePatternDefine = {
 export const isWasMovePatternDefine = (
   value: any
 ): value is WasMovePatternDefine => {
-  if (typeof value !== "object" || value === null) {
+  if (!FormatUtils.isObject(value)) {
     return false;
   }
-  if (typeof value.condition !== "object" || value.condition === null) {
+  if (!FormatUtils.isObject(value.condition)) {
     return false;
   }
   if (typeof value.condition.left !== "string") {

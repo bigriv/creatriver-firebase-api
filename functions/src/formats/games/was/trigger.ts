@@ -1,3 +1,4 @@
+import { FormatUtils } from "@/utils/format";
 import { FirebaseStorageModel } from "@/formats/fsmodel";
 import {
   WAS_AREA_STATE_TYPE,
@@ -17,7 +18,7 @@ export interface WasEventTriggerDefine extends FirebaseStorageModel {
 export function isWasEventTriggerDefine(
   value: any
 ): value is WasEventTriggerDefine {
-  if (typeof value !== "object" || value === null) {
+  if (!FormatUtils.isObject(value)) {
     return false;
   }
 
@@ -25,10 +26,7 @@ export function isWasEventTriggerDefine(
     return false;
   }
 
-  if (
-    value.description !== undefined &&
-    typeof value.description !== "string"
-  ) {
+  if (!FormatUtils.isOptionalString(value.description)) {
     return false;
   }
 
@@ -50,7 +48,7 @@ export function isWasEventTriggerDefine(
     return false;
   }
 
-  if (value.repeat !== undefined && typeof value.repeat !== "boolean") {
+  if (!FormatUtils.isOptionalBoolean(value.repeat)) {
     return false;
   }
 
@@ -83,16 +81,24 @@ export type WasEventCharacterConditionDefine = {
   and?: WasEventConditionDefine;
 };
 
+export type WasEventAccompanyConditionDefine = {
+  type: WAS_EVENT_CONDITION_TYPE.ACCOMPANY;
+  character_id: string;
+  value: boolean;
+  and?: WasEventConditionDefine;
+};
+
 export type WasEventConditionDefine =
   | WasEventClearConditionDefine
   | WasEventChapterConditionDefine
   | WasEventAreaConditionDefine
-  | WasEventCharacterConditionDefine;
+  | WasEventCharacterConditionDefine
+  | WasEventAccompanyConditionDefine;
 
 export function isWasEventConditionDefine(
   value: any
 ): value is WasEventConditionDefine {
-  if (typeof value !== "object" || value === null) {
+  if (!FormatUtils.isObject(value)) {
     return false;
   }
 
