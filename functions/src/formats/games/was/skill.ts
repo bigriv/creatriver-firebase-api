@@ -1,18 +1,23 @@
 import { FirebaseStorageModel } from "@/formats/fsmodel";
-import { WAS_SKILL_TYPE, WAS_STATE_CONDITION } from "@/const/games/was/const";
+import { WAS_SKILL_EFFECT_TYPE, WAS_SKILL_TYPE, WAS_STATE_CONDITION } from "@/const/games/was/const";
+
 
 export interface WasSkillDefine extends FirebaseStorageModel {
   id: string;
+  type: WAS_SKILL_TYPE,
   name: string;
   description: string;
   effects: WasSkillEffectDefine[];
-}
+};
 
 export function isWasSkillDefine(value: any): value is WasSkillDefine {
   if (typeof value !== "object" || value === null) {
     return false;
   }
   if (typeof value.id !== "string") {
+    return false;
+  }
+  if (!Object.values(WAS_SKILL_TYPE).includes(value.type)) {
     return false;
   }
   if (typeof value.name !== "string") {
@@ -29,30 +34,29 @@ export function isWasSkillDefine(value: any): value is WasSkillDefine {
   }
   return true;
 }
-
 type WasSkillDamageEffectDefine = {
-  type: WAS_SKILL_TYPE.DAMAGE;
+  type: WAS_SKILL_EFFECT_TYPE.DAMAGE;
   damage_formula: string;
   hit_rate_formula: string;
 };
 type WasSkillHealEffectDefine = {
-  type: WAS_SKILL_TYPE.HEAL;
+  type: WAS_SKILL_EFFECT_TYPE.HEAL;
   heal_formula: string;
 };
 type WasSkillGrantStateConditionEffectDefine = {
-  type: WAS_SKILL_TYPE.GRANT_STATE_CONDITION;
+  type: WAS_SKILL_EFFECT_TYPE.GRANT_STATE_CONDITION;
   state_condition: WAS_STATE_CONDITION;
   hit_rate_formula: string;
 };
 
 type WasSkillReleaseStateConditionEffectDefine = {
-  type: WAS_SKILL_TYPE.RELEASE_STATE_CONDITION;
+  type: WAS_SKILL_EFFECT_TYPE.RELEASE_STATE_CONDITION;
   state_conditions: WAS_STATE_CONDITION[];
   hit_rate_formula: string;
 };
 
 type WasSkillMessageEffectDefine = {
-  type: WAS_SKILL_TYPE.MESSAGE;
+  type: WAS_SKILL_EFFECT_TYPE.MESSAGE;
   message: string;
 };
 
@@ -85,7 +89,7 @@ export function isWasSkillEffectDefine(obj: any): obj is WasSkillEffectDefine {
     return false;
   }
 
-  if (obj.type === WAS_SKILL_TYPE.DAMAGE) {
+  if (obj.type === WAS_SKILL_EFFECT_TYPE.DAMAGE) {
     if (typeof obj.damage_formula !== "string") {
       return false;
     }
@@ -95,14 +99,14 @@ export function isWasSkillEffectDefine(obj: any): obj is WasSkillEffectDefine {
     return true;
   }
 
-  if (obj.type === WAS_SKILL_TYPE.HEAL) {
+  if (obj.type === WAS_SKILL_EFFECT_TYPE.HEAL) {
     if (typeof obj.heal_formula !== "string") {
       return false;
     }
     return true;
   }
 
-  if (obj.type === WAS_SKILL_TYPE.GRANT_STATE_CONDITION) {
+  if (obj.type === WAS_SKILL_EFFECT_TYPE.GRANT_STATE_CONDITION) {
     if (typeof obj.state_condition !== "string") {
       return false;
     }
@@ -112,7 +116,7 @@ export function isWasSkillEffectDefine(obj: any): obj is WasSkillEffectDefine {
     return true;
   }
 
-  if (obj.type === WAS_SKILL_TYPE.RELEASE_STATE_CONDITION) {
+  if (obj.type === WAS_SKILL_EFFECT_TYPE.RELEASE_STATE_CONDITION) {
     if (!Array.isArray(obj.state_conditions)) {
       return false;
     }
@@ -125,7 +129,7 @@ export function isWasSkillEffectDefine(obj: any): obj is WasSkillEffectDefine {
     return true;
   }
 
-  if (obj.type === WAS_SKILL_TYPE.MESSAGE) {
+  if (obj.type === WAS_SKILL_EFFECT_TYPE.MESSAGE) {
     if (typeof obj.message !== "string") {
       return false;
     }
