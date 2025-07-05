@@ -32,6 +32,10 @@ async function uploadDirectory(
 
     if (fs.statSync(localFilePath).isDirectory()) {
       // ディレクトリの場合、再帰的にアップロード
+      if (/.*\\backups$/.test(localFilePath)) {
+        // バックアップディレクトリはアップロード対象外とする
+        continue;
+      }
       await uploadDirectory(bucket, localFilePath, destinationPath);
     } else {
       // ファイルをアップロード
