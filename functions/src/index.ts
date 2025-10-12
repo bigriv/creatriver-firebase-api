@@ -13,6 +13,10 @@ import { EditWasEventController } from "@/controller/edits/games/was/event";
 import { EditWasEventTriggerController } from "@/controller/edits/games/was/trigger";
 import { EditWasAreaController } from "@/controller/edits/games/was/area";
 import { WasSaveController } from "@/controller/games/was/save";
+import { BirthController } from "./controller/games/birth";
+import { DuetController } from "./controller/games/duet";
+import { DuetEditController } from "./controller/edits/duet";
+import { ResourceController } from "./controller/resource";
 
 const dotenv = require("dotenv");
 dotenv.config({
@@ -63,51 +67,64 @@ const registerController = (
 };
 
 registerController(
-  "/edits/games/was/talk",
+  "/games/was/talks",
   EditWasTalkController,
-  "talk",
+  "talks",
   "gameofus/games/was",
   "gameofus/games/was/backups/talks"
 );
 registerController(
-  "/edits/games/was/battle",
+  "/games/was/battles",
   EditWasBattleController,
-  "battle",
+  "battles",
   "gameofus/games/was",
   "gameofus/games/was/backups/battles"
 );
 registerController(
-  "/edits/games/was/skill",
+  "/games/was/skills",
   EditWasSkillController,
-  "skill",
+  "skills",
   "gameofus/games/was",
   "gameofus/games/was/backups/skills"
 );
 registerController(
-  "/edits/games/was/event",
+  "/games/was/events",
   EditWasEventController,
-  "event",
+  "events",
   "gameofus/games/was",
   "gameofus/games/was/backups/events"
 );
 registerController(
-  "/edits/games/was/trigger",
+  "/games/was/triggers",
   EditWasEventTriggerController,
-  "trigger",
+  "triggers",
   "gameofus/games/was",
   "gameofus/games/was/backups/triggers"
 );
 registerController(
-  "/edits/games/was/area",
+  "/games/was/areas",
   EditWasAreaController,
-  "area",
+  "areas",
   "gameofus/games/was",
   "gameofus/games/was/backups/areas"
 );
 
 const wasSaveController = new WasSaveController();
-app.get("/games/was/save", (req, res) => wasSaveController.get(req, res));
-app.post("/games/was/save", (req, res) => wasSaveController.post(req, res));
+app.get("/saves/was", (req, res) => wasSaveController.get(req, res));
+app.post("/saves/was", (req, res) => wasSaveController.post(req, res));
+
+app.get("/games/birth/:type", (req, res) =>
+  new BirthController().get(req, res)
+);
+
+app.get("/games/duet/:type", (req, res) => new DuetController().get(req, res));
+app.post("/edits/duet/:type", (req, res) =>
+  new DuetEditController().post(req, res)
+);
+
+app.get("/games/resource", (req, res) =>
+  new ResourceController().get(req, res)
+);
 
 // functions.setGlobalOptions({ region: "asia-northeast1" });
 export const api = functions.https.onRequest(app);
